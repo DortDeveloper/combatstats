@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08111f">
+  <meta name="description" content="Combat Stats: estatísticas, desempenho e rankings para comunidades de jogos de guerra no Discord.">
+  <title>Combat Stats — Dados que fazem a diferença</title>
+  <style>
+    :root {
+      --bg: #07101d;
+      --panel: #0d1a2b;
+      --panel-2: #102239;
+      --text: #f3f7fc;
+      --muted: #a8b7ca;
+      --accent: #5eead4;
+      --accent-2: #60a5fa;
+      --line: rgba(183, 204, 230, .14);
+      --radius: 22px;
+      --max: 1160px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 80% 0%, rgba(37, 99, 235, .18), transparent 34rem),
+        radial-gradient(ellipse at 0% 25%, rgba(20, 184, 166, .10), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+    .nav-wrap { position: sticky; top: 0; z-index: 10; background: rgba(7,16,29,.82); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+    nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.04em; font-size: 1.18rem; }
+    .brand-mark { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 13px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #06111e; font-size: 1.25rem; box-shadow: 0 8px 28px rgba(94,234,212,.18); }
+    .nav-links { display: flex; align-items: center; gap: 26px; color: var(--muted); font-size: .94rem; }
+    .nav-links a:hover { color: var(--text); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 19px; border-radius: 12px; font-weight: 750; border: 1px solid transparent; transition: transform .2s, border-color .2s, background .2s; cursor: pointer; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--accent); color: #071522; box-shadow: 0 10px 30px rgba(94,234,212,.13); }
+    .btn-primary:hover { background: #8af3e4; }
+    .btn-secondary { border-color: var(--line); background: rgba(255,255,255,.035); color: var(--text); }
+    .hero { padding: 88px 0 74px; display: grid; grid-template-columns: 1.08fr .92fr; gap: 54px; align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; padding: 7px 12px; border: 1px solid rgba(94,234,212,.25); background: rgba(94,234,212,.07); border-radius: 999px; color: var(--accent); font-size: .82rem; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
+    .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px rgba(94,234,212,.1); }
+    h1 { font-size: clamp(2.7rem, 5.5vw, 5rem); line-height: 1.02; letter-spacing: -.065em; margin: 22px 0; max-width: 720px; }
+    h1 span { color: var(--accent); }
+    .hero-copy { color: var(--muted); font-size: 1.12rem; max-width: 590px; margin: 0 0 28px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .trust { margin-top: 28px; color: #8294aa; font-size: .86rem; }
+    .dashboard { position: relative; padding: 17px; border: 1px solid rgba(174,202,233,.18); border-radius: 26px; background: linear-gradient(145deg, rgba(18,39,62,.95), rgba(9,21,36,.96)); box-shadow: 0 30px 90px rgba(0,0,0,.35); transform: perspective(1000px) rotateY(-4deg) rotateX(2deg); }
+    .dash-top { display: flex; align-items: center; justify-content: space-between; padding: 6px 5px 16px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .8rem; }
+    .dots { display: flex; gap: 5px; } .dots i { width: 7px; height: 7px; display: block; border-radius: 50%; background: #52647b; }
+    .dash-title { margin: 18px 4px 14px; font-size: 1.05rem; font-weight: 800; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .stat { background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 15px; padding: 15px; }
+    .stat small { color: var(--muted); display: block; font-size: .78rem; }
+    .stat strong { display: block; font-size: 1.65rem; letter-spacing: -.04em; margin: 4px 0 2px; }
+    .positive { color: var(--accent); font-size: .77rem; }
+    .chart { margin-top: 12px; background: rgba(255,255,255,.025); border: 1px solid var(--line); border-radius: 15px; padding: 15px; }
+    .chart-head { display: flex; justify-content: space-between; gap: 10px; font-size: .8rem; color: var(--muted); }
+    .bars { height: 100px; display: flex; align-items: end; gap: 8px; padding-top: 14px; }
+    .bars span { flex: 1; min-width: 5px; border-radius: 5px 5px 2px 2px; background: linear-gradient(180deg, var(--accent), #287f9a); opacity: .9; }
+    .mini-row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding: 10px 11px; border-radius: 10px; background: rgba(255,255,255,.035); font-size: .8rem; }
+    .mini-row b { color: var(--accent); }
+    section { padding: 74px 0; }
+    .section-head { max-width: 690px; margin-bottom: 32px; }
+    .kicker { color: var(--accent); font-size: .8rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    h2 { margin: 9px 0 12px; font-size: clamp(2rem, 3.6vw, 3.1rem); line-height: 1.1; letter-spacing: -.05em; }
+    .section-head p { color: var(--muted); margin: 0; font-size: 1.02rem; }
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .feature { padding: 24px; border-radius: var(--radius); border: 1px solid var(--line); background: linear-gradient(145deg, rgba(17,35,56,.72), rgba(10,22,37,.72)); }
+    .feature-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 14px; background: rgba(94,234,212,.1); color: var(--accent); font-size: 1.35rem; margin-bottom: 18px; }
+    .feature h3 { margin: 0 0 8px; font-size: 1.12rem; }
+    .feature p { margin: 0; color: var(--muted); font-size: .94rem; }
+    .games-section { background: linear-gradient(180deg, transparent, rgba(15,32,52,.55), transparent); }
+    .games { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; }
+    .game { min-height: 124px; display: flex; flex-direction: column; justify-content: space-between; padding: 19px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.035); transition: border-color .2s, transform .2s; }
+    .game:hover { border-color: rgba(94,234,212,.45); transform: translateY(-3px); }
+    .game .symbol { font-size: 1.7rem; }
+    .game strong { font-size: .98rem; }
+    .game small { color: var(--muted); }
+    .rank-panel { display: grid; grid-template-columns: .85fr 1.15fr; gap: 32px; align-items: center; padding: clamp(25px, 5vw, 48px); border-radius: 28px; border: 1px solid rgba(96,165,250,.2); background: radial-gradient(ellipse at 100% 0%, rgba(37,99,235,.16), transparent 55%), var(--panel); }
+    .rank-panel p { color: var(--muted); }
+    .region-list { display: flex; flex-wrap: wrap; gap: 10px; }
+    .region { border: 1px solid var(--line); background: rgba(255,255,255,.04); padding: 10px 13px; border-radius: 10px; color: #d9e5f3; font-size: .9rem; }
+    .cta { text-align: center; padding: 55px 25px; border-radius: 28px; border: 1px solid rgba(94,234,212,.2); background: radial-gradient(ellipse at 50% 0%, rgba(20,184,166,.13), transparent 60%), #0a1726; }
+    .cta p { color: var(--muted); max-width: 610px; margin: 0 auto 25px; }
+    footer { border-top: 1px solid var(--line); padding: 28px 0; color: #8192a8; font-size: .85rem; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .footer-links { display: flex; gap: 18px; }
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: 42px; padding-top: 65px; }
+      .dashboard { max-width: 620px; width: 100%; margin: 0 auto; transform: none; }
+      .features { grid-template-columns: repeat(2, 1fr); }
+      .games { grid-template-columns: repeat(2, 1fr); }
+      .rank-panel { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .container { width: min(var(--max), calc(100% - 28px)); }
+      nav { min-height: 66px; }
+      .nav-links { display: none; }
+      .brand { font-size: 1.02rem; }
+      .brand-mark { width: 36px; height: 36px; }
+      .nav-cta { padding: 10px 12px; font-size: .82rem; }
+      .hero { padding: 54px 0 50px; }
+      h1 { font-size: clamp(2.65rem, 13vw, 4rem); }
+      .hero-copy { font-size: 1rem; }
+      section { padding: 54px 0; }
+      .features { grid-template-columns: 1fr; }
+      .stat strong { font-size: 1.4rem; }
+      .dashboard { padding: 12px; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Troque os links #discord e #sobre pelos endereços oficiais do seu projeto. -->
+  <div class="nav-wrap">
+    <nav class="container">
+      <a class="brand" href="#inicio" aria-label="Combat Stats - início">
+        <span class="brand-mark">CS</span><span>COMBAT <span style="color:var(--accent)">STATS</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="#recursos">Recursos</a>
+        <a href="#jogos">Jogos</a>
+        <a href="#rankings">Rankings</a>
+      </div>
+      <a class="btn btn-primary nav-cta" href="#discord">Conheça o Combat Stats <span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+
+  <main>
+    <header class="container hero" id="inicio">
+      <div>
+        <div class="eyebrow"><span class="pulse"></span> Inteligência para comunidades gamer</div>
+        <h1>Transforme dados em <span>vantagem</span>.</h1>
+        <p class="hero-copy">O Combat Stats reúne estatísticas, acompanhamento de desempenho e rankings para comunidades de jogos de guerra no Discord. Mais informação para analisar suas batalhas e evoluir junto com seu clã.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#discord">Adicionar ao Discord <span aria-hidden="true">↗</span></a>
+          <a class="btn btn-secondary" href="#recursos">Explorar recursos <span aria-hidden="true">↓</span></a>
+        </div>
+        <p class="trust">Feito para jogadores, clãs e comunidades que levam estratégia a sério.</p>
+      </div>
+
+      <div class="dashboard" aria-label="Exemplo ilustrativo de painel de estatísticas">
+        <div class="dash-top"><span class="dots"><i></i><i></i><i></i></span><span>COMBAT STATS / PAINEL</span><span>● Online</span></div>
+        <div class="dash-title">Visão geral de desempenho</div>
+        <div class="stat-grid">
+          <div class="stat"><small>Batalhas analisadas</small><strong>12.840</strong><span class="positive">↗ Acompanhamento</span></div>
+          <div class="stat"><small>Taxa de vitória</small><strong>58,4%</strong><span class="positive">Desempenho</span></div>
+          <div class="stat"><small>Dano médio</small><strong>74,2 mil</strong><span class="positive">Estatísticas</span></div>
+          <div class="stat"><small>Posição no ranking</small><strong>#08</strong><span class="positive">Competição</span></div>
+        </div>
+        <div class="chart">
+          <div class="chart-head"><span>Desempenho recente</span><span>Últimas batalhas</span></div>
+          <div class="bars" aria-hidden="true">
+            <span style="height:38%"></span><span style="height:55%"></span><span style="height:44%"></span><span style="height:69%"></span><span style="height:59%"></span><span style="height:82%"></span><span style="height:66%"></span><span style="height:92%"></span><span style="height:76%"></span><span style="height:100%"></span><span style="height:84%"></span><span style="height:94%"></span>
+          </div>
+        </div>
+        <div class="mini-row"><span>Estatísticas organizadas em um só lugar</span><b>COMBAT STATS</b></div>
+        <p style="font-size:.72rem;color:#7f93aa;margin:10px 3px 0">Painel visual ilustrativo — números demonstrativos.</p>
+      </div>
+    </header>
+
+    <section id="recursos">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">Recursos</div>
+          <h2>Mais clareza para cada batalha.</h2>
+          <p>Informações úteis para acompanhar jogadores, comparar resultados e manter sua comunidade conectada ao jogo.</p>
+        </div>
+        <div class="features">
+          <article class="feature"><div class="feature-icon">▥</div><h3>Estatísticas de jogadores</h3><p>Consulte dados de desempenho e acompanhe a evolução dos jogadores nos títulos compatíveis.</p></article>
+          <article class="feature"><div class="feature-icon">♜</div><h3>Rankings competitivos</h3><p>Organize a disputa e acompanhe posições de clãs e comunidades conforme os recursos disponíveis.</p></article>
+          <article class="feature"><div class="feature-icon">⌘</div><h3>Integração com Discord</h3><p>Leve consultas e informações para o ambiente onde sua comunidade conversa e joga.</p></article>
+          <article class="feature"><div class="feature-icon">◫</div><h3>Acompanhamento de desempenho</h3><p>Use dados para entender resultados, identificar tendências e planejar os próximos confrontos.</p></article>
+          <article class="feature"><div class="feature-icon">◎</div><h3>Comunidades e clãs</h3><p>Uma ferramenta para grupos casuais e competitivos que querem acompanhar seus resultados.</p></article>
+          <article class="feature"><div class="feature-icon">↗</div><h3>Foco na evolução</h3><p>Transforme números em referências para melhorar sua estratégia e jogar com mais consciência.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="games-section" id="jogos">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">Jogos compatíveis</div>
+          <h2>Uma central para seus jogos de guerra.</h2>
+          <p>O Combat Stats foi pensado para comunidades que acompanham diferentes cenários competitivos.</p>
+        </div>
+        <div class="games">
+          <div class="game"><span class="symbol">🚢</span><div><strong>World of Warships</strong><br><small>Estatísticas navais</small></div></div>
+          <div class="game"><span class="symbol">🪖</span><div><strong>World of Tanks</strong><br><small>Combate terrestre</small></div></div>
+          <div class="game"><span class="symbol">✈</span><div><strong>War Thunder</strong><br><small>Combate combinado</small></div></div>
+          <div class="game"><span class="symbol">⚔</span><div><strong>Age of Empires IV</strong><br><small>Estratégia em tempo real</small></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rankings">
+      <div class="container">
+        <div class="rank-panel">
+          <div>
+            <div class="kicker">Competição global</div>
+            <h2>Rankings que aproximam comunidades.</h2>
+            <p>Acompanhe disputas e compare resultados entre regiões, conforme os rankings disponibilizados pelo projeto.</p>
+          </div>
+          <div class="region-list" aria-label="Regiões de rankings">
+            <span class="region">Brasil</span><span class="region">Espanha</span><span class="region">Hispânicos</span><span class="region">Ásia</span><span class="region">França</span><span class="region">Alemanha</span><span class="region">LATAM</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="discord">
+      <div class="container">
+        <div class="cta">
+          <div class="kicker">Prepare sua próxima batalha</div>
+          <h2>Seus dados. Sua estratégia. Seu clã.</h2>
+          <p>Conheça o Combat Stats e descubra como ele pode ajudar sua comunidade a acompanhar estatísticas e resultados diretamente no Discord.</p>
+          <!-- Substitua # pelo link de convite do bot ou do servidor oficial. -->
+          <a class="btn btn-primary" href="#" onclick="alert('Adicione aqui o link oficial de convite do Combat Stats.'); return false;">Adicionar ao Discord <span aria-hidden="true">↗</span></a>
+          <a class="btn btn-secondary" href="#" onclick="alert('Adicione aqui o link do servidor oficial da comunidade.'); return false;" style="margin-left:8px">Servidor da comunidade</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <a class="brand" href="#inicio"><span class="brand-mark" style="width:32px;height:32px;border-radius:10px;font-size:.95rem">CS</span><span>COMBAT <span style="color:var(--accent)">STATS</span></span></a>
+      <span>© <span id="year"></span> Combat Stats. Todos os direitos reservados.</span>
+      <div class="footer-links"><a href="#recursos">Recursos</a><a href="#jogos">Jogos</a><a href="#inicio">Voltar ao topo ↑</a></div>
+    </div>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
